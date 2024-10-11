@@ -1,1 +1,15 @@
-spring.application.name=User API
+spring:
+  application:
+    name: User API
+
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/task_tracker_db"
+    username: "postgres"
+    password: "123"
+
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
