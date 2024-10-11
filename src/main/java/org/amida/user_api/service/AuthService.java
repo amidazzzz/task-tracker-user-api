@@ -5,12 +5,12 @@ import org.amida.user_api.model.User;
 import org.amida.user_api.repository.UserRepository;
 import org.amida.user_api.request.SignInRequest;
 import org.amida.user_api.request.SignUpRequest;
-import org.amida.user_api.response.SignInResponse;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class AuthService {
 
     private final UserRepository userRepository;
 
@@ -23,6 +23,11 @@ public class UserService {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    public User authenticate(SignInRequest signInRequest) {
+        return userRepository.findByUsername(signInRequest.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User with username " + signInRequest.getUsername() + " not found"));
     }
 
 }
