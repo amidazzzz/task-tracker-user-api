@@ -1,4 +1,4 @@
-package org.amida.user_api.dto;
+package org.amida.user_api.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
