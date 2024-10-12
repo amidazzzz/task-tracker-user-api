@@ -6,6 +6,7 @@ import org.amida.user_api.repository.UserRepository;
 import org.amida.user_api.request.SignInRequest;
 import org.amida.user_api.request.SignUpRequest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,21 +14,27 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public User register(SignUpRequest signUpRequest) {
+    public void register(SignUpRequest signUpRequest) {
 
         User user = User.builder()
                 .username(signUpRequest.getUsername())
-                .password(signUpRequest.getPassword())
+                .password(passwordEncoder.encode(signUpRequest.getPassword())) // fix password encode
                 .email(signUpRequest.getEmail())
                 .build();
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
-    public User authenticate(SignInRequest signInRequest) {
-        return userRepository.findByUsername(signInRequest.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User with username " + signInRequest.getUsername() + " not found"));
+    public void authenticate(SignInRequest signInRequest) {
+        User user = userRepository.findByUsername(signInRequest.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User with username "
+                        + signInRequest.getUsername() + " not found"));
+
+        if (!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid password");
+        }
     }
 
 }
